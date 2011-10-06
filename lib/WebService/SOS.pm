@@ -11,7 +11,7 @@ use URI::Escape;
 
 use WWW::SOS::Response;
 
-our $VERSION = '0.1';
+our $VERSION = '0.01';
 
 # for extra debugging output
 has 'debug' => (
