@@ -1,0 +1,156 @@
+=head1 NAME
+
+WebService::SOS - a module for interfacing with an OpenGIS Sensor Observation Service (SOS)
+
+=head1 SYNOPSIS
+
+ use WebService::SOS;
+
+ my $sosclient = WWW::SOS->new( server_url => 'http://someserver.com/path/to/sos/server' );
+
+ my $response = $sosclient->GetCapabilities();
+
+ my $response = $sosclient->DescribeSensor($procedure);
+
+ my $response = $sosclient->GetObservation($offering,$observedProperty,$beginTime,$endTime);
+
+=head1 DESCRIPTION
+
+This module provides methods for interfacing with an OpenGIS Sensor Observation Service (SOS).
+
+=over
+
+=item * 
+
+GetCapabilities
+
+=over
+
+=item *
+
+get the capabillities
+
+=back
+
+=item *
+
+DescribeSensor
+
+=over
+
+=item *
+
+describe a sensor
+
+=back
+
+=item * 
+
+GetObservation
+
+=over
+
+=item *
+
+get an observation
+
+=back
+
+=back
+
+=head1 METHODS
+
+new(%args)
+
+=over
+
+ $sosclient = WWW::SOS->new( server_url => 'http://somehost.com/path/to/sos/server' );
+
+options:
+
+=over
+
+C<server_url> - full url to the sos web service server (required)
+
+C<method> - can be "post" (default) or "get"
+
+C<debug> - set to 1 to get some debugging output on STDERR
+
+=back
+
+=back
+
+GetCapabilities()
+
+=over
+
+ $response = $sosclient->GetCapabilities();
+
+this method takes no options
+
+=back
+
+DescribeSensor($procedure)
+
+=over
+
+ $response = $sosclient->DescribeSensor($procedure);
+
+options:
+
+=over
+
+C<$procedure> - the sensor to query (AllowedValues are specified in response from C<GetCapabilities()>)
+
+=back
+
+=back
+
+GetObservation($offering,$observedProperty,$beginTime,$endTime)
+
+=over
+
+options:
+
+=over
+
+C<$offering> - the sensor to query (AllowedValues are specified in response from C<GetCapabilities()>)
+
+C<$observedProperty> - the property to query for (AllowedValues are specified in response from C<GetCapabilities()>)
+
+C<$beginTime> - the start of the time range for which you want to query (in ISO 8601 date and time format)
+
+C<$endTime> - the end of the time range for which you want to query (in ISO 8601 date and time format)
+
+=back
+
+=back
+
+=head1 ERRORS
+
+This module C<cluck>s on all errors.
+
+=head1 SEE ALSO
+
+=over
+
+L<http://www.opengeospatial.org/standards/sos> - documentation on the OpenGIS SOS standard
+
+L<http://www.iso.org/iso/date_and_time_format> - ISO 8601 date and time format
+
+=back
+
+=head1 SOURCE REPOSITORY
+
+L<http://github.com/jamescdavis/WebService-SOS>
+
+=head1 AUTHOR
+
+James C. Davis, E<lt>jdavis@cpan.orgE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 by James C. Davis
+
+This library is free software; you can redistribute it and/or modify
+it under the same terms as Perl itself.
