@@ -21,7 +21,7 @@ has_xpath_value        decimalSeparator => './om:member/om:Observation/om:result
 has_xpath_value          tokenSeparator => './om:member/om:Observation/om:result/swe:DataArray/swe:encoding/swe:TextBlock/@tokenSeparator';
 has_xpath_value               allValues => './om:member/om:Observation/om:result/swe:DataArray/swe:values';
 
-has_xpath_object_list fields => './om:member/om:Observation/om:result/swe:DataArray/swe:elementType/swe:DataRecord/swe:field' => 'WebService::SOS::Observations::Field';
+has_xpath_object_list fields => './om:member/om:Observation/om:result/swe:DataArray/swe:elementType/swe:DataRecord/swe:field' => 'WebService::SOS::SWEField';
 
 has 'exception' => (
     is => 'ro',

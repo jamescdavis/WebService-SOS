@@ -1,4 +1,4 @@
-package WebService::SOS::Observations::Field;
+package WebService::SOS::SWEField;
 use XML::Rabbit;
 
 has_xpath_value name => './@name';

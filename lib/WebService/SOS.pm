@@ -10,6 +10,7 @@ use HTTP::Request::Common;
 use URI::Escape;
 
 use WebService::SOS::Capabilities;
+use WebService::SOS::SensorDescription;
 use WebService::SOS::Observations;
 use WebService::SOS::Exception;
 
