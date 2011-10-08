@@ -1,4 +1,4 @@
-package WWW::SOS::Response::Parameter;
+package WebService::SOS::Capabilities::Parameter;
 use XML::Rabbit;
 
 has_xpath_value name => './@name';

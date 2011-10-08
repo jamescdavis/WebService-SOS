@@ -1,5 +1,8 @@
-package WWW::SOS::Response::Observations;
-use XML::Rabbit;
+package WebService::SOS::Observations;
+use XML::Rabbit::Root 0.1.0;
+
+add_xpath_namespace 'ows' => 'http://www.opengis.net/ows/1.1';
+add_xpath_namespace 'om' => 'http://www.opengis.net/om/1.0';
 
 has_xpath_value description => './gml:description';
 has_xpath_value name => './gml:name';
@@ -18,7 +21,13 @@ has_xpath_value        decimalSeparator => './om:member/om:Observation/om:result
 has_xpath_value          tokenSeparator => './om:member/om:Observation/om:result/swe:DataArray/swe:encoding/swe:TextBlock/@tokenSeparator';
 has_xpath_value               allValues => './om:member/om:Observation/om:result/swe:DataArray/swe:values';
 
-has_xpath_object_list fields => './om:member/om:Observation/om:result/swe:DataArray/swe:elementType/swe:DataRecord/swe:field' => 'WWW::SOS::Response::Field';
+has_xpath_object_list fields => './om:member/om:Observation/om:result/swe:DataArray/swe:elementType/swe:DataRecord/swe:field' => 'WebService::SOS::Observations::Field';
+
+has 'exception' => (
+    is => 'ro',
+    isa => 'Bool',
+    default => 0,
+);
 
 has 'values' => (
     is => 'ro',

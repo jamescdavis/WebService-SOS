@@ -1,4 +1,4 @@
-package WWW::SOS::Response::Offering;
+package WebService::SOS::Capabilities::Offering;
 use XML::Rabbit;
 
 has_xpath_value                    name => './gml:name';

@@ -1,4 +1,4 @@
-package WWW::SOS;
+package WebService::SOS;
 
 use Moose;
 use Moose::Util::TypeConstraints;
@@ -9,12 +9,21 @@ use LWP::UserAgent;
 use HTTP::Request::Common;
 use URI::Escape;
 
-use WWW::SOS::Response;
+use WebService::SOS::Capabilities;
+use WebService::SOS::Observations;
+use WebService::SOS::Exception;
 
 our $VERSION = '0.01';
 
 # for extra debugging output
 has 'debug' => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
+# return raw xml instead of an object
+has 'rawxml' => (
     is      => 'ro',
     isa     => 'Bool',
     default => 0,
@@ -40,18 +49,27 @@ has 'method' => (
 
 sub _build_ua {
     my ($self) = @_;
-    return LWP::UserAgent->new( agent => 'WWW::SOS/' . $VERSION );
+    return LWP::UserAgent->new( agent => 'WebService::SOS/' . $VERSION );
 }
 
-sub _process_response {
-    my $response = shift;
-
+sub _check_response {
+    my ($self, $response) = @_;
+    
     unless ($response->is_success) {
         cluck("Error communicating with SOS server: ".$response->code." ".$response->message);
-        return undef;
+        return ( return => 1, retval => undef );
     }
 
-    return WWW::SOS::Response->new( xml => $response->content );
+    return ( return => 1, retval => $response->content ) if $self->rawxml;
+
+    my %args = ( xml => $response->content, namespace_map => { ows => 'http://www.opengis.net/ows/1.1' } );
+    # kluge due to bad xml at some sos servers
+    $args{namespace_map} = { ows => 'http://www.opengis.net/ows' } if $response->content =~ m|xmlns="http://www.opengis.net/ows"|;
+
+    my $resp = WebService::SOS::Exception->new(%args);
+    return ( return => 1, retval => $resp ) if $resp->exception;
+
+    return (return => 0 );
 }
 
 sub GetCapabilities {
@@ -72,11 +90,14 @@ sub GetCapabilities {
    xmlns:ogc="http://www.opengis.net/ogc"
    xmlns:om="http://www.opengis.net/om/1.0" service="SOS">
 </sos:GetCapabilities>';
-        print STDERR "GetCapabilities: POST\n$message\n" if $self->debug;
+        print STDERR "GetCapabilities: POST\n$message\n" if $self->debug > 0;
         $response = $self->ua->request(POST $self->server_url, Content_Type => 'text/xml', Content => $message);
     }
 
-    return _process_response($response);
+    my %check = _check_response($self,$response);
+    return $check{retval} if $check{return};
+
+    return WebService::SOS::Capabilities->new( xml => $response->content );
 }
 
 sub DescribeSensor {
@@ -107,17 +128,15 @@ sub DescribeSensor {
         $response = $self->ua->request(POST $self->server_url, Content_Type => 'text/xml', Content => $message);
     }
 
-    return _process_response($response);
+    my %check = _check_response($self,$response);
+    return $check{retval} if $check{return};
+
+    return WebService::SOS::SensorDescription->new( xml => $response->content );
 }
 
 sub GetObservation {
     my ($self,$offering,$observedProperty,$beginTime,$endTime) = @_;
-#    my $responseFormat = 'text/xml;schema="ioos/0.6.1"';
     my $responseFormat = 'text/xml; subtype="om/1.0.0"';
-#    my $responseFormat = 'text/xml%3B+subtype="om/1.0.0"';
-#    my $responseFormat = 'text/csv';
-#    my $responseFormat = 'text/tab-separated-values';
-#    my $responseFormat = 'blah';
     my $response;
     if ($self->{method} =~ /^get$/i) {
         my $request = sprintf('%s?request=GetObservation&service=SOS&version=1.0.0&responseFormat=%s&offering=%s&observedProperty=%s&eventTime=%s',
@@ -159,13 +178,14 @@ sub GetObservation {
   </result>
 </sos:GetObservation>',$offering,$observedProperty,$responseFormat,$beginTime,$endTime);
 
-#  <sos:observedProperty>http://mmisw.org/ont/cf/parameter/water_surface_height_above_reference_datum</sos:observedProperty>
-
         print STDERR "GetObservation: POST\n$message\n" if $self->debug;
         $response = $self->ua->request(POST $self->server_url, Content_Type => 'text/xml', Content => $message);
     }
 
-    return _process_response($response);
+    my %check = _check_response($self,$response);
+    return $check{retval} if $check{return};
+
+    return WebService::SOS::Observations->new( xml => $response->content );
 }
 
 __PACKAGE__->meta->make_immutable();
