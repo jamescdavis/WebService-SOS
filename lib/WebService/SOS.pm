@@ -203,13 +203,13 @@ WebService::SOS - a module for interfacing with an OpenGIS Sensor Observation Se
 
  use WebService::SOS;
 
- my $sosclient = WWW::SOS->new( server_url => 'http://someserver.com/path/to/sos/server' );
+ my $sosclient = WebService::SOS->new( server_url => 'http://someserver.com/path/to/sos/server' );
 
- my $response = $sosclient->GetCapabilities();
+ my $cap = $sosclient->GetCapabilities();
 
- my $response = $sosclient->DescribeSensor($procedure);
+ my $desc = $sosclient->DescribeSensor($procedure);
 
- my $response = $sosclient->GetObservation($offering,$observedProperty,$beginTime,$endTime);
+ my $obs = $sosclient->GetObservation($offering,$observedProperty,$beginTime,$endTime);
 
 =head1 DESCRIPTION
 
@@ -261,7 +261,7 @@ new(%args)
 
 =over
 
- $sosclient = WWW::SOS->new( server_url => 'http://somehost.com/path/to/sos/server' );
+ $sosclient = WebService::SOS->new( server_url => 'http://somehost.com/path/to/sos/server' );
 
 options:
 
@@ -281,7 +281,7 @@ GetCapabilities()
 
 =over
 
- $response = $sosclient->GetCapabilities();
+ $cap = $sosclient->GetCapabilities();
 
 this method takes no options
 
@@ -291,7 +291,7 @@ DescribeSensor($procedure)
 
 =over
 
- $response = $sosclient->DescribeSensor($procedure);
+ $desc = $sosclient->DescribeSensor($procedure);
 
 options:
 
